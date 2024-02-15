@@ -1,4 +1,6 @@
-﻿namespace GeldAutomaatAdmin
+﻿using Database;
+
+namespace GeldAutomaatAdmin
 {
     public partial class MainPage : ContentPage
     {
@@ -19,6 +21,12 @@
                 CounterBtn.Text = $"Clicked {count} times";
 
             SemanticScreenReader.Announce(CounterBtn.Text);
+        }
+
+        private void TestBtn_Clicked(object sender, EventArgs e)
+        {
+            dynamic result = Database.Database.getQuery("SELECT * FROM admins");
+            System.Diagnostics.Debug.WriteLine(result[0][1] as string);
         }
     }
 
