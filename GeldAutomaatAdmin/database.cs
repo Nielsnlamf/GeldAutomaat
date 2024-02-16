@@ -1,4 +1,6 @@
 ﻿using MySqlConnector;
+using Authenticator;
+using GeldAutomaatAdmin;
 
 namespace Database
 {
@@ -28,6 +30,51 @@ namespace Database
         public void closeConnection()
         {
             _connection.Close();
+        }
+
+        public static bool AttemptAdminLogin(string email, string password)
+        {
+            _connection.Close();
+            _connection.Open();
+            string q = "SELECT * FROM admins WHERE email = '" + email + "' AND active = '1'";
+            System.Diagnostics.Debug.WriteLine(q);
+            MySqlCommand command = new MySqlCommand(q, _connection);
+            MySqlDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        string hashedPassword = reader.GetString("password");
+                        if (Authenticator.Authenticator.VerifyPassword(password, hashedPassword))
+                        {
+                            globals.user.Clear();
+                            Object[] objects = new Object[reader.FieldCount];
+                            int quant = reader.GetValues(objects);
+                            for (int i = 0; i < quant; i++)
+                            {
+                            globals.user.Add(reader.GetName(i), objects[i]);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            return false;
+        }
+
+        public static bool AddUser(string fname, string lname)
+        {
+            string query = "INSERT INTO users (firstName, lastName, active) VALUES ('" + fname + "', '" + lname + "', '1')";
+            MySqlCommand command = new MySqlCommand(query, _connection);
+            return command.ExecuteNonQuery() > 0;
+        }
+
+        public static dynamic addAdmin(string fname, string lname, string email, string password)
+        {
+            string hashedPassword = Authenticator.Authenticator.HashPassword(password);
+
+            string query = "INSERT INTO admins (firstName, lastName, active, email, password) VALUES ('"+fname+ "', '" + lname + "', '1', '" + email + "', '" + hashedPassword + "')";
+            MySqlCommand command = new MySqlCommand(query, _connection);
+            return command.ExecuteNonQuery() > 0;
         }
 
         public static dynamic getQuery(string query)
