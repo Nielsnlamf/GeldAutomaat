@@ -28,6 +28,10 @@ namespace Authenticator
 
         public static bool VerifyPassword(string password, string hashedPassword)
         {
+            if(password == null || hashedPassword == null)
+            {
+                return false;
+            }
             System.Diagnostics.Debug.WriteLine("Checking: " + password + " against: \n" + hashedPassword);
             byte[] hashBytes = Convert.FromBase64String(hashedPassword);
 

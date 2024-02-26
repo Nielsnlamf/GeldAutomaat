@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GeldAutomaatAdmin.NewAccountPage">
+    <!--NavigationPage.HasBackButton="False"-->
+
+    <VerticalStackLayout Padding="20">
+        <Button x:Name="Back" Text="Back" Clicked="Back_Clicked"
+                    MaximumWidthRequest="80" HorizontalOptions="Start" VerticalOptions="Start"
+                    Margin="20"></Button>
+        <Label FontSize="Title" HorizontalOptions="Center" Text="Create new account" x:Name="PageTitleLabel"></Label>
+        <HorizontalStackLayout HorizontalOptions="Center">
+            <CheckBox x:Name="CustomIBANCheck" CheckedChanged="CustomIBANCheck_CheckedChanged"></CheckBox>
+            <Label x:Name="IbanCheckLabel" FontSize="Subtitle" Text="Custom IBAN?" VerticalOptions="Center" ></Label>
+            <Entry x:Name="IbanEntry" IsReadOnly="True" WidthRequest="500" Margin="20"></Entry>
+        </HorizontalStackLayout>
+        <HorizontalStackLayout HorizontalOptions="Center">
+
+            <CheckBox x:Name="CustomPinCheck" CheckedChanged="CustomPinCheck_CheckChanged"></CheckBox>
+            <Label x:Name="PinCheckLabel" FontSize="Subtitle" Text="Custom pincode?" VerticalOptions="Center" ></Label>
+            <Entry x:Name="PinEntry" IsReadOnly="True" WidthRequest="500" Margin="20"></Entry>
+        </HorizontalStackLayout>
+        <HorizontalStackLayout HorizontalOptions="Center">
+            <Entry x:Name="BalanceEntry" Keyboard="Numeric" Placeholder="Balance" Margin="20"></Entry>
+        </HorizontalStackLayout>
+        <Button x:Name="CreateAccount" Text="Create account" Clicked="CreateAccount_Clicked"
+                MaximumWidthRequest="200" HorizontalOptions="Center" VerticalOptions="End"
+                Margin="20"></Button>
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,15 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="GeldAutomaatAdmin.MainPage">
+             x:Class="GeldAutomaatAdmin.MainPage"            
+             NavigationPage.HasBackButton="False">
 
     <ScrollView>
-        <VerticalStackLayout>
+        <VerticalStackLayout Padding="20" Spacing="15">
             <Button x:Name="Logout" Text="Logout" Clicked="Logout_Clicked"
                     MaximumWidthRequest="80" HorizontalOptions="Start" VerticalOptions="Start"
                     Margin="20"></Button>
 
             <Label x:Name="welcomeText" Text="" FontSize="Large" HorizontalOptions="Center" Margin="20"></Label>
+            <Button
+                x:Name="SearchAccount" Text="Search for an existing account" Clicked="SearchAccount_Clicked"
+                ></Button>
+            <Button
+                x:Name="NewAccount" Text="Add new account" Clicked="NewAccount_Clicked"
+            ></Button>
         </VerticalStackLayout>
     </ScrollView>
 
