@@ -92,6 +92,15 @@ namespace Database
             return command.ExecuteNonQuery() > 0;
         }
 
+        public static bool DeleteAccount(Account account)
+        {
+            _connection.Close();
+            _connection.Open();
+            string q = "UPDATE accounts SET active = '0' WHERE accountID = " + account.id;
+            MySqlCommand command = new MySqlCommand(q, _connection);
+            return command.ExecuteNonQuery() > 0;
+        }
+
         public static bool AddUser(string fname, string lname)
         {
             _connection.Close();
@@ -146,7 +155,7 @@ namespace Database
 
         public static dynamic SearchAccountByKeyword(string searchType, string keyword)
         {
-            string query = "SELECT * FROM accounts WHERE " + searchType.ToLower() + " LIKE '%" + keyword + "%'";
+            string query = "SELECT * FROM accounts WHERE " + searchType.ToLower() + " LIKE '%" + keyword + "%' AND active = 1";
             MySqlCommand command = new MySqlCommand(query, _connection);
             _connection.Close();
             _connection.Open();

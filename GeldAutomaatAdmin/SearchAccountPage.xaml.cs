@@ -1,6 +1,7 @@
 namespace GeldAutomaatAdmin;
 using Database;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 public partial class SearchAccountPage : ContentPage
 {
@@ -27,13 +28,15 @@ public partial class SearchAccountPage : ContentPage
 			{
 				View = new StackLayout
 				{
+					Spacing = 20,
 					Children =
 					{
                         new Label
 						{
                             Text = "No accounts found.",
                             FontSize = 20,
-                            HorizontalOptions = LayoutOptions.Center
+							HorizontalTextAlignment = TextAlignment.Center,
+                            HorizontalOptions = LayoutOptions.Fill
                         }
                     }
 				}
@@ -44,15 +47,20 @@ public partial class SearchAccountPage : ContentPage
 		{
         foreach (Database.Account account in accounts)
 		{
-				//Cell cell = new TextCell
-				//{
-				//	Text = account.iban,
-				//	Detail = "Account ID: " + account.id,
-				//};
+				MenuItem EditItem = new MenuItem { Text = "Edit", IsDestructive = true };
+                MenuItem DeleteItem = new MenuItem { Text = "Delete", IsDestructive = true };
+                //EditItem.Clicked += EditItem_Clicked(account);
+				//DeleteItem.Clicked += DeleteItem_ClickedAsync(account);
 				Cell cell = new ViewCell
 				{
+					ContextActions =
+					{
+						EditItem,
+						DeleteItem
+                    },
 					View = new StackLayout
 					{
+						Margin = new Thickness(0, 0, 0, 10),
 						Orientation = StackOrientation.Vertical,
 						Children =
 						{
@@ -60,11 +68,15 @@ public partial class SearchAccountPage : ContentPage
 							{
 								Text = account.iban,
 								FontSize = 20,
+							HorizontalTextAlignment = TextAlignment.Center,
+							HorizontalOptions = LayoutOptions.Fill
 							},
 							new Label
 							{
 								Text = "Account ID: " + account.id,
 								FontSize = 15,
+							HorizontalTextAlignment = TextAlignment.Center,
+							HorizontalOptions = LayoutOptions.Fill
 							}
 						}
 					}
@@ -77,7 +89,7 @@ public partial class SearchAccountPage : ContentPage
 		return tableRoot;
     }
 
-	private void SearchButton_Clicked(Object sender, EventArgs e)
+    private void SearchButton_Clicked(Object sender, EventArgs e)
 	{
 	List<Database.Account> accounts = new List<Database.Account>();
 		if (SearchEntry.Text == "")
