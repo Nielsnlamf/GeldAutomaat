@@ -32,7 +32,7 @@
                 <TableSection>
                     <ViewCell>
                         <StackLayout>
-                            <Label Text="No results found" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"></Label>
+                            <Label Text="No accounts found" FontSize="20" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"></Label>
                         </StackLayout>
                     </ViewCell>
                 </TableSection>

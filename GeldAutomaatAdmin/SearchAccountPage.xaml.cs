@@ -15,16 +15,63 @@ public partial class SearchAccountPage : ContentPage
 		await Navigation.PopAsync();
     }
 
-	private dynamic CreateTable(dynamic result)
+	private TableRoot CreateTable(List<Database.Account> accounts)
 	{
         TableRoot tableRoot = new TableRoot();
-        TableSection tableSection = new TableSection();
-        foreach (var item in result)
+		TableSection tableSection = new TableSection();
+		if(accounts.Count == 0)
 		{
-			Cell cell = new TextCell
+		tableSection = new TableSection
+		{
+			new ViewCell
 			{
-			};
+				View = new StackLayout
+				{
+					Children =
+					{
+                        new Label
+						{
+                            Text = "No accounts found.",
+                            FontSize = 20,
+                            HorizontalOptions = LayoutOptions.Center
+                        }
+                    }
+				}
+			}
+		};
+		}
+		else
+		{
+        foreach (Database.Account account in accounts)
+		{
+				//Cell cell = new TextCell
+				//{
+				//	Text = account.iban,
+				//	Detail = "Account ID: " + account.id,
+				//};
+				Cell cell = new ViewCell
+				{
+					View = new StackLayout
+					{
+						Orientation = StackOrientation.Vertical,
+						Children =
+						{
+							new Label
+							{
+								Text = account.iban,
+								FontSize = 20,
+							},
+							new Label
+							{
+								Text = "Account ID: " + account.id,
+								FontSize = 15,
+							}
+						}
+					}
+				};
+			tableSection.Add(cell);
         }
+		}
         tableRoot.Add(tableSection);
         TableView tableView = new TableView(tableRoot);
 		return tableRoot;
@@ -32,6 +79,7 @@ public partial class SearchAccountPage : ContentPage
 
 	private void SearchButton_Clicked(Object sender, EventArgs e)
 	{
+	List<Database.Account> accounts = new List<Database.Account>();
 		if (SearchEntry.Text == "")
 		{
             DisplayAlert("Error", "Please enter a keyword to search for.", "OK");
@@ -41,38 +89,14 @@ public partial class SearchAccountPage : ContentPage
 		string searchType = SearchTypePicker.SelectedItem.ToString();
 		if (searchType == "User")
 		{
-			dynamic result = Database.SearchAccountByUser(SearchEntry.Text);
-			try
-			{
-				var isBool = result.GetType() == typeof(bool);
-				int len = result.Count;
-				System.Diagnostics.Debug.WriteLine("Found " + len + " accounts.");
-				SearchResults.Root = CreateTable(result);
-			}
-			catch (Exception ex)
-			{
-
-				DisplayAlert("Error", "No accounts found.", "OK");
-
-            }
+			accounts = Database.SearchAccountByUser(SearchEntry.Text);
 		}
 		else
 		{
-			dynamic result = Database.SearchAccountByKeyword(searchType, SearchEntry.Text);
-			try
-			{
-				var isBool = result.GetType() == typeof(bool);
-				int len = result.Count;
-				System.Diagnostics.Debug.WriteLine("Found " + len + " accounts.");
-				SearchResults.Root = CreateTable(result);
-			}
-			catch (Exception ex)
-			{
-
-				DisplayAlert("Error", "No accounts found.", "OK");
-
-            }
+			accounts = Database.SearchAccountByKeyword(searchType, SearchEntry.Text);
 		}
+		Debug.WriteLine(accounts.Count);
+		SearchResults.Root = CreateTable(accounts);
 	}
 
 }

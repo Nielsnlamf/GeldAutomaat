@@ -10,6 +10,24 @@ namespace Database
 {
     public class Database
     {
+        public class Account
+        {
+            public Account(int id, string iban, int pin, double balance, bool active)
+            {
+                this.id = id;
+                this.iban = iban;
+                this.pin = pin;
+                this.balance = balance;
+                this.active = active;
+            }
+            
+            public int id { get; set; }
+            public string iban { get; set; }
+            public int pin { get; set; }
+            public double balance { get; set; }
+            public bool active { get; set; }
+                    
+        }
         private static MySqlConnection _connection;
         static Database()
         {
@@ -124,41 +142,38 @@ namespace Database
                 return false;
             }
         }
-        public class AccountReturn
-        {
-            public AccountReturn(int id, string iban, int pin, double balance, bool active)
-            {
-                this.id = id;
-                this.iban = iban;
-                this.pin = pin;
-                this.balance = balance;
-                this.active = active;
-            }
-            
-            public int id { get; set; }
-            public string iban { get; set; }
-            public int pin { get; set; }
-            public double balance { get; set; }
-            public bool active { get; set; }
-                    
-        }
+
 
         public static dynamic SearchAccountByKeyword(string searchType, string keyword)
         {
             string query = "SELECT * FROM accounts WHERE " + searchType.ToLower() + " LIKE '%" + keyword + "%'";
-            dynamic result = getQuery(query);
-            List<AccountReturn> accounts = new List<AccountReturn>();
-            foreach(object row in result)
+            MySqlCommand command = new MySqlCommand(query, _connection);
+            _connection.Close();
+            _connection.Open();
+            MySqlDataReader reader = command.ExecuteReader();
+            List<Account> data = new List<Account>();
+            while (reader.Read())
             {
+                data.Add(new Account(reader.GetInt32(0), reader.GetString(1), reader.GetInt32(2), reader.GetDouble(3), reader.GetBoolean(4)));
             }
 
-            return accounts;
+            return data;
         }
 
         public static dynamic SearchAccountByUser(string keyword)
         {
                 string query = "SELECT * FROM accounts WHERE accountID IN (SELECT Accounts_accountID FROM users_has_accounts WHERE Users_UserID = " + keyword + ")";
-                return getQuery(query);
+                MySqlCommand command = new MySqlCommand(query, _connection);
+                _connection.Close();
+                _connection.Open();
+                MySqlDataReader reader = command.ExecuteReader();
+                List<Account> data = new List<Account>();
+                while (reader.Read())
+                {
+                    data.Add(new Account(reader.GetInt32(0), reader.GetString(1), reader.GetInt32(2), reader.GetDouble(3), reader.GetBoolean(4)));
+                }
+
+                return data;
         }
 
         
