@@ -49,8 +49,8 @@ public partial class SearchAccountPage : ContentPage
 		{
 				MenuItem EditItem = new MenuItem { Text = "Edit", IsDestructive = true };
                 MenuItem DeleteItem = new MenuItem { Text = "Delete", IsDestructive = true };
-                //EditItem.Clicked += EditItem_Clicked(account);
-				//DeleteItem.Clicked += DeleteItem_ClickedAsync(account);
+				EditItem.Clicked += (sender, args) => { EditAccount(account); };
+                DeleteItem.Clicked += (sender, args) => { DeleteAccount(account); };
 				Cell cell = new ViewCell
 				{
 					ContextActions =
@@ -87,6 +87,34 @@ public partial class SearchAccountPage : ContentPage
         tableRoot.Add(tableSection);
         TableView tableView = new TableView(tableRoot);
 		return tableRoot;
+    }
+
+    private bool DeleteAccount(Database.Account account)
+	{
+
+        bool answer = GetAsyncAlertResponse().Result;
+		if (answer)
+		{
+			DisplayAlert("Account Deleted", "The account has been deleted.", "OK");
+			//if (!Database.DeleteAccount(account))
+			//{
+			//	return false;
+			//}
+			SearchButton_Clicked(null, null);
+		}
+		return false;
+	}
+
+	private async Task<bool> GetAsyncAlertResponse()
+	{
+		Debug.WriteLine("GetAsyncAlertResponse");
+		bool result = await DisplayAlert("Delete Account", "Are you sure you want to delete this account?", "ok", "nah");
+		return true;
+	}
+	private bool EditAccount(Database.Account account)
+	{
+		//Navigation.PushAsync(new EditAccountPage(account));
+		return true;
     }
 
     private void SearchButton_Clicked(Object sender, EventArgs e)
