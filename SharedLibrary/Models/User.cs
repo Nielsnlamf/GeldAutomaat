@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharedLibrary.Models
 {
-    internal class User : INotifyPropertyChanged
+    public class User : INotifyPropertyChanged
     {
         private int _userID;
         private string _firstName;
@@ -14,6 +14,7 @@ namespace SharedLibrary.Models
         private DateTime _created_at;
         private DateTime _updated_at;
         private DateTime _deleted_at;
+        private List<Account> _accounts = new List<Account>();
 
         public int userID
         {
@@ -55,6 +56,12 @@ namespace SharedLibrary.Models
         {
             get { return _deleted_at; }
             set { _deleted_at = value; }
+        }
+
+        public List<Account> accounts
+        {
+            get { return _accounts; }
+            set { _accounts = value; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

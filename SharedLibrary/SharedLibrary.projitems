@@ -9,6 +9,7 @@
     <Import_RootNamespace>SharedLibrary</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\authenticator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\geldautomaat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\SQL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Account.cs" />

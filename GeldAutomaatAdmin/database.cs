@@ -1,5 +1,6 @@
 ﻿using MySqlConnector;
-using Authenticator;
+using SharedLibrary.Controllers;
+using SharedLibrary.Models;
 using GeldAutomaatAdmin;
 using System.Collections;
 using System.Security.Cryptography.X509Certificates;
@@ -67,7 +68,7 @@ namespace Database
                     while (reader.Read())
                     {
                         string hashedPassword = reader.GetString("password");
-                        if (Authenticator.Authenticator.VerifyPassword(password, hashedPassword))
+                        if (SharedLibrary.Controllers.geldautomaat_authenticator.VerifyPassword(password, hashedPassword))
                         {
                             globals.user.Clear();
                             Object[] objects = new Object[reader.FieldCount];
@@ -114,7 +115,7 @@ namespace Database
         {
             _connection.Close();
             _connection.Open();
-            string hashedPassword = Authenticator.Authenticator.HashPassword(password);
+            string hashedPassword = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(password);
 
             string query = "INSERT INTO admins (firstName, lastName, active, email, password) VALUES ('"+fname+ "', '" + lname + "', '1', '" + email + "', '" + hashedPassword + "')";
             MySqlCommand command = new MySqlCommand(query, _connection);

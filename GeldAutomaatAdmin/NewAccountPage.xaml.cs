@@ -1,4 +1,7 @@
 namespace GeldAutomaatAdmin;
+using SharedLibrary.Models;
+using SharedLibrary.Controllers;
+using System.Diagnostics;
 
 public partial class NewAccountPage : ContentPage
 {
@@ -51,7 +54,7 @@ public partial class NewAccountPage : ContentPage
         System.Diagnostics.Debug.WriteLine("Create account button clicked. Creating account.");
 		if (CustomIBANCheck.IsChecked)
 		{
-            if (IbanEntry.Text.Length != 18)
+            if (IbanEntry.Text.Length != 17)
 			{
                 await DisplayAlert("Invalid IBAN", "IBAN must be 18 characters long.", "OK");
                 return;
@@ -83,7 +86,13 @@ public partial class NewAccountPage : ContentPage
 		{
             balance = int.Parse(BalanceEntry.Text);
 		}
-		bool result = Database.Database.CreateAccount(IbanEntry.Text, int.Parse(PinEntry.Text), balance);
+		Account account = new Account();
+		account.iban = IbanEntry.Text;
+		account.pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(PinEntry.Text);
+		account.balance = balance;
+		account.created_at = DateTime.Now;
+		account.active = 1;
+		bool result = SharedLibrary.Controllers.geldautomaat_controller.CreateAccount(account);
 		await DisplayAlert("Account created", "Account created successfully.", "OK");
         await Navigation.PopAsync();
     }

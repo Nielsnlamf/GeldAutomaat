@@ -43,6 +43,12 @@ namespace SharedLibrary.Models
             set { _transactionAmount = value; }
         }
 
+        public DateTime transactionDatetime
+        {
+            get { return _transactionDatetime; }
+            set { _transactionDatetime = value; }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)

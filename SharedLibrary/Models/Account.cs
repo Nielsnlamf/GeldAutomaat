@@ -9,7 +9,7 @@ namespace SharedLibrary.Models
     {
         private int _accountID;
         private string _iban;
-        private int _pin;
+        private string _pin;
         private decimal _balance;
         private int _active;
         private DateTime _created_at;
@@ -37,7 +37,7 @@ namespace SharedLibrary.Models
             }
         }
 
-        public int pin
+        public string pin
         {
             get { return _pin; }
             set

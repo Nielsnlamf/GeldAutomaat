@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using SharedLibrary.Controllers;
 
 namespace GeldAutomaatAdmin;
 
@@ -18,7 +19,7 @@ public partial class LoginPage : ContentPage
             return;
         }
 
-		bool result = Database.Database.AttemptAdminLogin(EmailField.Text, PasswordField.Text);
+		bool result = geldautomaat_authenticator.attemptAdminLogin(EmailField.Text, PasswordField.Text);
 		System.Diagnostics.Debug.WriteLine(result);
 		if (result)
 		{

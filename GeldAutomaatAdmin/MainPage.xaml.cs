@@ -8,7 +8,7 @@ namespace GeldAutomaatAdmin
         {
             AppShell.SetNavBarIsVisible(this, false);
             InitializeComponent();
-            welcomeText.Text = "Welcome, " + globals.user["firstName"] +".\nPick an option.";
+            welcomeText.Text = "Welcome, " + SharedLibrary.Controllers.geldautomaat_authenticator.activeAdmin.firstName +".\nPick an option.";
         }
 
         public void OnSubmitClicked(object sender, EventArgs e)
