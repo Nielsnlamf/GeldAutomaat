@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GeldAutomaatAdmin.SearchAccountPage">
+    <!--NavigationPage.HasBackButton="False"-->
+
+    <VerticalStackLayout Padding="20" Spacing="20">
+        <!--<Button x:Name="Back" Text="Back" Clicked="Back_Clicked"
+                    MaximumWidthRequest="80" HorizontalOptions="Start" VerticalOptions="Start"
+                    Margin="20"></Button>-->
+
+        <Label HorizontalOptions="Center" FontSize="Large" Text="Search for an account"></Label>
+        
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="15" MaximumHeightRequest="80">
+                <Label VerticalTextAlignment="Center" Text="Search by:" FontSize="Small" Margin="0,0,0,0"></Label>
+                <Picker WidthRequest="180" x:Name="SearchTypePicker">
+                <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>AccountID</x:String>
+                    <x:String>IBAN</x:String>
+                    <x:String>User</x:String>
+                </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+        <Entry WidthRequest="280" x:Name="SearchEntry" Completed="SearchButton_Clicked" Placeholder="Search keyword"></Entry>
+        <Button x:Name="SearchButton" Text="Search" Clicked="SearchButton_Clicked"
+                    MaximumWidthRequest="80" HorizontalOptions="End" VerticalOptions="Start"
+                    ></Button>
+        </HorizontalStackLayout>
+        <TableView x:Name="SearchResults" Intent="Settings">
+            <TableRoot>
+                <TableSection>
+                    <ViewCell>
+                        <StackLayout>
+                            <Label Text="No accounts found" FontSize="20" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"></Label>
+                        </StackLayout>
+                    </ViewCell>
+                </TableSection>
+            </TableRoot>
+        </TableView>
+    </VerticalStackLayout>
+</ContentPage>

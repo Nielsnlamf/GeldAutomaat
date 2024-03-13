@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GeldAutomaatAdmin.EditAccountPage">
+    <VerticalStackLayout Padding="20">
+        <Button x:Name="Back" Text="Back" Clicked="Back_Clicked"
+                    MaximumWidthRequest="80" HorizontalOptions="Start" VerticalOptions="Start"
+                    Margin="20"></Button>
+        <Label FontSize="Title" HorizontalOptions="Center" Text="Edit account" x:Name="PageTitleLabel"></Label>
+        <HorizontalStackLayout HorizontalOptions="Center">
+            <Label x:Name="IbanCheckLabel" FontSize="Subtitle" Text="IBAN:" VerticalOptions="Center" ></Label>
+            <Entry x:Name="IbanEntry" WidthRequest="500" Margin="20"></Entry>
+        </HorizontalStackLayout>
+        <HorizontalStackLayout HorizontalOptions="Center">
+
+            <Label x:Name="PinCheckLabel" FontSize="Subtitle" Text="Pin:" VerticalOptions="Center" ></Label>
+            <Entry x:Name="PinEntry" WidthRequest="500" Margin="20"></Entry>
+        </HorizontalStackLayout>
+        <Button x:Name="SaveButton" Text="Save" Clicked="SaveButton_Clicked"
+                MaximumWidthRequest="200" HorizontalOptions="Center" VerticalOptions="End"
+                Margin="20"></Button>
+    </VerticalStackLayout>
+</ContentPage>
