@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SharedLibrary.Models
@@ -16,6 +17,8 @@ namespace SharedLibrary.Models
         private DateTime _updated_at;
         private DateTime _deleted_at;
         private List<Transaction> _transactions = new List<Transaction>();
+        private bool _canWithdraw;
+
 
         public int accountID
         {
@@ -104,6 +107,16 @@ namespace SharedLibrary.Models
             {
                 _transactions = value;
                 OnPropertyChanged("transactions");
+            }
+        }
+
+        public bool canWithdraw
+        {
+            get { return _canWithdraw; }
+            set
+            {
+                _canWithdraw = value;
+                OnPropertyChanged("canWithdraw");
             }
         }
 
