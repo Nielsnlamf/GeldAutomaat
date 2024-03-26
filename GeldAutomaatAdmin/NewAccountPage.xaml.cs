@@ -88,12 +88,12 @@ public partial class NewAccountPage : ContentPage
 		}
 		Account account = new Account();
 		account.iban = IbanEntry.Text;
-		account.pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(PinEntry.Text);
+		account.pin = PinEntry.Text.ToString();
 		account.balance = balance;
 		account.created_at = DateTime.Now;
 		account.active = 1;
 		bool result = SharedLibrary.Controllers.geldautomaat_controller.CreateAccount(account);
-		await DisplayAlert("Account created", "Account created successfully.", "OK");
+		await DisplayAlert("Account created", "Account created successfully with PIN: " + account.pin, "OK");
         await Navigation.PopAsync();
     }
 }

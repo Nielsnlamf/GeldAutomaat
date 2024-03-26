@@ -33,19 +33,36 @@ namespace SharedLibrary.Controllers
             }
         }
 
-        public static bool editAccount(Account account)
+        public static bool editAccount(Account account, bool newPin)
         {
-            string query = "UPDATE accounts SET iban = @iban, pin = @pin, balance = @balance, updated_at = @updated WHERE accountID = @id";
-            using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                var pin = "";
+            if (newPin)
             {
-                var pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(account.pin.ToString());
-                cmd.Parameters.AddWithValue("@id", account.accountID);
-                cmd.Parameters.AddWithValue("@iban", account.iban);
-                cmd.Parameters.AddWithValue("@pin", pin);
-                cmd.Parameters.AddWithValue("@balance", account.balance);
-                cmd.Parameters.AddWithValue("@active", account.active);
-                cmd.Parameters.AddWithValue("@updated", DateTime.Now);
-                return cmd.ExecuteNonQuery() == 1;
+                string query = "UPDATE accounts SET iban = @iban, pin = @pin, balance = @balance, updated_at = @updated WHERE accountID = @id";
+                using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                {
+                    pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(account.pin.ToString());
+                    cmd.Parameters.AddWithValue("@pin", pin);
+                    cmd.Parameters.AddWithValue("@id", account.accountID);
+                    cmd.Parameters.AddWithValue("@iban", account.iban);
+                    cmd.Parameters.AddWithValue("@balance", account.balance);
+                    cmd.Parameters.AddWithValue("@active", account.active);
+                    cmd.Parameters.AddWithValue("@updated", DateTime.Now);
+                    return cmd.ExecuteNonQuery() == 1;
+                }
+            }
+            else
+            {
+                string query = "UPDATE accounts SET iban = @iban, balance = @balance, updated_at = @updated WHERE accountID = @id";
+                using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@id", account.accountID);
+                    cmd.Parameters.AddWithValue("@iban", account.iban);
+                    cmd.Parameters.AddWithValue("@balance", account.balance);
+                    cmd.Parameters.AddWithValue("@active", account.active);
+                    cmd.Parameters.AddWithValue("@updated", DateTime.Now);
+                    return cmd.ExecuteNonQuery() == 1;
+                }
             }
         }
 

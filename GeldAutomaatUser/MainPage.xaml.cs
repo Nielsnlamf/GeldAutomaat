@@ -7,19 +7,9 @@
         public MainPage()
         {
             InitializeComponent();
+            MessageLabel.Text = "Welcome to the ATM, please select an action below.";
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
-        }
     }
 
 }

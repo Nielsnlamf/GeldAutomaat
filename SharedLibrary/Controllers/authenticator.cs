@@ -10,6 +10,7 @@ namespace SharedLibrary.Controllers
     public class geldautomaat_authenticator
     {
         public static Admin activeAdmin = new Admin();
+        public static Account activeAccount = new Account();
 
         public static void setActiveAdmin(MySqlDataReader reader)
         {
@@ -22,6 +23,17 @@ namespace SharedLibrary.Controllers
             activeAdmin.created_at = reader.GetDateTime(6);
             //activeAdmin.updated_at = reader.GetDateTime(7);
             //activeAdmin.deleted_at = reader.GetDateTime(8);
+        }
+
+        public static void setActiveAccount(MySqlDataReader reader)
+        {
+            activeAccount.accountID = reader.GetInt32(0);
+            activeAccount.iban = reader.GetString(1);
+            activeAccount.pin = reader.GetString(2);
+            activeAccount.balance = reader.GetDecimal(3);
+            activeAccount.created_at = reader.GetDateTime(4);
+            activeAccount.updated_at = reader.GetDateTime(5);
+            activeAccount.deleted_at = reader.GetDateTime(6);
         }
 
         public static bool attemptAdminLogin(string email, string password)
@@ -39,6 +51,28 @@ namespace SharedLibrary.Controllers
                         if (VerifyPassword(password, hashedPassword))
                         {
                             setActiveAdmin(reader);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool attemptUserLogin(string iban, string pin)
+        {
+            string query = "SELECT * FROM accounts WHERE iban = @iban";
+            using (MySqlCommand cmd = new MySqlCommand(query, SQL.Connection))
+            {
+                cmd.Parameters.AddWithValue("@iban", iban);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Debug.WriteLine("Found account: " + reader.GetString(1));
+                        string hashedPin = reader.GetString(2);
+                        if (VerifyPassword(pin, hashedPin))
+                        {
                             return true;
                         }
                     }

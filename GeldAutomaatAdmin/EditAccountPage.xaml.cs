@@ -24,6 +24,7 @@ public partial class EditAccountPage : ContentPage
 
     private async void SaveButton_Clicked(object sender, EventArgs e)
     {
+        bool newPin = true;
         // check if iban is valid and not yet in use
         if (IbanEntry.Text.Length != 17)
         {
@@ -48,10 +49,15 @@ public partial class EditAccountPage : ContentPage
                 await DisplayAlert("Invalid PIN", "PIN must be 4 characters long.", "OK");
                 return;
             }
+            this.account.pin = PinEntry.Text;
+            
         }
-        this.account.pin = account.pin;
+        else
+        {
+        newPin = false;
+        }
         this.account.updated_at = DateTime.Now;
-        if(SharedLibrary.Controllers.geldautomaat_controller.editAccount(this.account)) {
+        if(SharedLibrary.Controllers.geldautomaat_controller.editAccount(this.account, newPin)) {
             DisplayAlert("Success", "Account edited.", "OK");
             await Navigation.PopAsync();
         }
