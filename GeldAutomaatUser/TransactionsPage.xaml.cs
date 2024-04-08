@@ -23,5 +23,5 @@ public partial class TransactionsPage : ContentPage
 			transactions.Add(geldautomaat_authenticator.activeAccount.transactions[i]);
 		}
 		TransactionCollectionView.ItemsSource = transactions;
-    }
+	}
 }
