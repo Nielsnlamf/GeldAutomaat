@@ -19,7 +19,7 @@ public partial class WithdrawPage : ContentPage
 		{
 			MessageLabel.Text = "You have insufficient funds to withdraw money";
 		}
-		else if (geldautomaat_authenticator.activeAccount.canWithdraw)
+		else if (!geldautomaat_authenticator.activeAccount.canWithdraw)
 		{
 			MessageLabel.Text = "You have reached your daily withdrawal limit";
 		}
