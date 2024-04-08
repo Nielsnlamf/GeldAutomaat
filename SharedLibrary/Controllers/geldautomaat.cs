@@ -137,7 +137,7 @@ namespace SharedLibrary.Controllers
             }
         }
 
-        private bool checkWithdrawable(Account account)
+        public static bool checkWithdrawable(Account account)
         {
             System.Diagnostics.Debug.WriteLine("Account transaction list: " + account.transactions.Count());
             if (account.balance == 0)
@@ -151,8 +151,10 @@ namespace SharedLibrary.Controllers
                                            select Transaction;
                 if (filteredTransactions.Count() >= 3)
                 {
+                    System.Diagnostics.Debug.WriteLine("Can not withdraw");
                     return false;
                 }
+                    System.Diagnostics.Debug.WriteLine("Can withdraw");
                 return true;
             }
         }
@@ -182,9 +184,32 @@ namespace SharedLibrary.Controllers
 
                 editAccount(account, false);
                 geldautomaat_authenticator.activeAccount = account;
+                geldautomaat_authenticator.refreshActiveAccount();
                 Microsoft.Maui.Controls.Application.Current.MainPage.Navigation.PopAsync();
                 return true;
             }
+        }
+        public static bool Deposit(Account account, decimal amount)
+        {
+                string query = "INSERT INTO transactions (transactionAccountID, transactionUserID, transactionType, transactionAmount, transactionDatetime) VALUES (@accountID, @userID, @type, @amount, @datetime)";
+                using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@accountID", account.accountID);
+                    cmd.Parameters.AddWithValue("@userID", 1);
+                    cmd.Parameters.AddWithValue("@type", "deposit");
+                    cmd.Parameters.AddWithValue("@amount", amount);
+                    cmd.Parameters.AddWithValue("@datetime", DateTime.Now);
+                    cmd.ExecuteNonQuery();
+                }
+
+                account.balance += amount;
+
+                editAccount(account, false);
+
+                editAccount(account, false);
+                geldautomaat_authenticator.activeAccount = account;
+                Microsoft.Maui.Controls.Application.Current.MainPage.Navigation.PopAsync();
+                return true;
         }
 
         private List<Account> getAllAccounts()
@@ -230,7 +255,7 @@ namespace SharedLibrary.Controllers
         }
 
         // Transactions
-        private List<Transaction> getTransactions(int accountID)
+        public List<Transaction> getTransactions(int accountID)
         {
             string query = "SELECT * FROM transactions where transactionAccountID = @accountID";
             using (MySqlCommand cmd = new MySqlCommand(query, Connection))

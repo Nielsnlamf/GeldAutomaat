@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="GeldAutomaatUser.WithdrawPage">
+             x:Class="GeldAutomaatUser.DepositPage">
 
+    
     <ContentView HorizontalOptions="FillAndExpand">
         <StackLayout>
-            <Label x:Name="MessageLabel" Text="Withdraw money" FontSize="Large" HorizontalOptions="Center" Margin="0,20,0,0"/>
+            <Label x:Name="MessageLabel" Text="Deposit" FontSize="Large" HorizontalOptions="Center" Margin="0,20,0,0"/>
             <Grid Padding="5" Margin="5" RowSpacing="30" ColumnSpacing="30" WidthRequest="1300" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="120"/>

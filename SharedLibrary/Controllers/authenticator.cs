@@ -31,6 +31,32 @@ namespace SharedLibrary.Controllers
             activeAccount.iban = reader.GetString(1);
             activeAccount.pin = reader.GetString(2);
             activeAccount.balance = reader.GetDecimal(3);
+            string query = "SELECT * FROM transactions where transactionAccountID = @accountID";
+            SQL.Connection.Close();
+            SQL.Connection.Open();
+            using (MySqlCommand cmd = new MySqlCommand(query, SQL.Connection))
+            {
+                cmd.Parameters.AddWithValue("@accountID", activeAccount.accountID);
+                using (MySqlDataReader tempReader = cmd.ExecuteReader())
+                {
+                    List<Transaction> transactions = new List<Transaction>();
+                    while (reader.Read())
+                    {
+                        Transaction transaction = new Transaction();
+                        transaction.transactionID = reader.GetInt32(0);
+                        transaction.transactionAccountID = reader.GetInt32(1);
+                        transaction.transactionUserID = reader.GetInt32(2);
+                        transaction.transactionType = reader.GetString(3);
+                        transaction.transactionAmount = reader.GetDecimal(4);
+                        transaction.transactionDatetime = reader.GetDateTime(5);
+                        transactions.Add(transaction);
+                    }
+                    activeAccount.transactions = transactions;
+                    tempReader.Close();
+                }
+            }
+            activeAccount.canWithdraw = geldautomaat_controller.checkWithdrawable(activeAccount);
+            //activeAccount.transactions = new geldautomaat_controller().getTransactions(activeAccount.accountID);
             //activeAccount.created_at = reader.GetDateTime(4);
             //activeAccount.updated_at = reader.GetDateTime(5);
             //activeAccount.deleted_at = reader.GetDateTime(6);
@@ -57,6 +83,27 @@ namespace SharedLibrary.Controllers
                 }
             }
             return false;
+        }
+
+        public static bool refreshActiveAccount(dynamic id = null)
+        {
+            int usableID(dynamic id) => id ?? activeAccount.accountID;
+            SQL.Connection.Close();
+            SQL.Connection.Open();
+            string query = "SELECT * FROM accounts WHERE accountId = @id";
+            using (MySqlCommand cmd = new MySqlCommand(query, SQL.Connection))
+            {
+                cmd.Parameters.AddWithValue("@id", usableID);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        setActiveAccount(reader);
+                        return true;
+                    }
+                }
+            }
+            return true;
         }
 
         public static bool attemptUserLogin(string iban, string pin)

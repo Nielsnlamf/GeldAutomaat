@@ -17,14 +17,14 @@ namespace GeldAutomaatUser
             await Application.Current.MainPage.Navigation.PushAsync(new WithdrawPage());
         }
 
-        public static void DepositMoney()
+        public static async void DepositMoney()
         {
-            
+            await Application.Current.MainPage.Navigation.PushAsync(new DepositPage());
         }
 
-        public static void ViewTransactions()
+        public static async void ViewTransactions()
         {
-            
+            await Application.Current.MainPage.Navigation.PushAsync(new TransactionsPage());
         }
 
         public static async void CheckBalance()

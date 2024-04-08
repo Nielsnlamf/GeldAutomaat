@@ -80,6 +80,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="DepositPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="WithdrawPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
