@@ -12,31 +12,35 @@
         <Label HorizontalOptions="Center" FontSize="Large" Text="Search for an account"></Label>
         
         <HorizontalStackLayout HorizontalOptions="Center" Spacing="15" MaximumHeightRequest="80">
-                <Label VerticalTextAlignment="Center" Text="Search by:" FontSize="Small" Margin="0,0,0,0"></Label>
-                <Picker WidthRequest="180" x:Name="SearchTypePicker">
-                <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                    <x:String>AccountID</x:String>
-                    <x:String>IBAN</x:String>
-                    <x:String>User</x:String>
-                </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-        <Entry WidthRequest="280" x:Name="SearchEntry" Completed="SearchButton_Clicked" Placeholder="Search keyword"></Entry>
+            <CheckBox x:Name="ShowInactive" IsChecked="False" CheckedChanged="ShowInactive_CheckedChanged"></CheckBox>
+            <Label VerticalTextAlignment="Center" Text="Show inactive" FontSize="Small" Margin="0,0,0,0"></Label>
+        <Entry WidthRequest="280" x:Name="SearchEntry" Completed="SearchButton_Clicked" Placeholder="Search for"></Entry>
         <Button x:Name="SearchButton" Text="Search" Clicked="SearchButton_Clicked"
                     MaximumWidthRequest="80" HorizontalOptions="End" VerticalOptions="Start"
                     ></Button>
         </HorizontalStackLayout>
-        <TableView x:Name="SearchResults" Intent="Settings">
-            <TableRoot>
-                <TableSection>
-                    <ViewCell>
-                        <StackLayout>
-                            <Label Text="No accounts found" FontSize="20" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"></Label>
-                        </StackLayout>
-                    </ViewCell>
-                </TableSection>
-            </TableRoot>
-        </TableView>
+
+        <CollectionView x:Name="CollectionView">
+            <CollectionView.Header>
+                    <Grid WidthRequest="800" ColumnDefinitions="100, 2*, 1*, 1*" RowSpacing="0" ColumnSpacing="0">
+                        <Label Text="ID" FontSize="20" Grid.Column="0"></Label>
+                        <Label Text="IBAN" FontSize="20" Grid.Column="1"></Label>
+                        <Label Text="Last used" FontSize="20" Grid.Column="2"></Label>
+                        <Label x:Name="activeColumn" IsVisible="True" Text="Active" FontSize="20" Grid.Column="3"></Label>
+                    </Grid>
+            </CollectionView.Header>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <ScrollView>
+                    <Grid WidthRequest="800" ColumnDefinitions="100, 3*, 4*, 1*" RowSpacing="0" ColumnSpacing="0">
+                        <Label Text="{Binding accountID}" FontSize="20" Grid.Column="0"></Label>
+                        <Label Text="{Binding iban}" FontSize="20" Grid.Column="1"></Label>
+                        <Label Text="{Binding updated_at}" FontSize="20" Grid.Column="2"></Label>
+                        <Label Text="{Binding active}" IsVisible="True" FontSize="20" Grid.Column="3"></Label>
+                    </Grid>
+                    </ScrollView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>

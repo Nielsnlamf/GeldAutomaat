@@ -87,7 +87,11 @@ namespace SharedLibrary.Controllers
 
         public static bool refreshActiveAccount(dynamic id = null)
         {
-            int usableID(dynamic id) => id ?? activeAccount.accountID;
+            int usableID = 0;
+            if (id == null)
+            {
+                usableID = activeAccount.accountID;
+            }
             SQL.Connection.Close();
             SQL.Connection.Open();
             string query = "SELECT * FROM accounts WHERE accountId = @id";
