@@ -13,6 +13,8 @@ public partial class EditAccountPage : ContentPage
 		geldautomaat_controller GeldAutomaatObj = new geldautomaat_controller();
         this.account = account;
         IbanEntry.Text = account.iban;
+        FirstNameEntry.Text = account.firstname;
+        LastNameEntry.Text = account.lastname;
 
 	}
 
@@ -57,6 +59,9 @@ public partial class EditAccountPage : ContentPage
         newPin = false;
         }
         this.account.updated_at = DateTime.Now;
+        this.account.firstname = new string(FirstNameEntry.Text.Where(c => char.IsLetter(c)).ToArray());
+        this.account.lastname = new string(LastNameEntry.Text.Where(c => char.IsLetter(c)).ToArray());
+
         if(SharedLibrary.Controllers.geldautomaat_controller.editAccount(this.account, newPin)) {
             DisplayAlert("Success", "Account edited.", "OK");
             await Navigation.PopAsync();
@@ -64,6 +69,19 @@ public partial class EditAccountPage : ContentPage
         else
         {
             DisplayAlert("Error", "Failed to edit account.", "OK");
+        }
+    }
+
+    private async void DeleteButton_Clicked(object sender, EventArgs e)
+    {
+		if (!SharedLibrary.Controllers.geldautomaat_controller.deleteAccount(this.account))
+		{
+			DisplayAlert("Account could not be deleted", "Something went wrong while attempting to delete this account, please try again.", "OK");
+		}
+        else
+        {
+			DisplayAlert("Account Deleted", "The account has been deleted.", "OK");
+            await Navigation.PopAsync();
         }
     }
 }

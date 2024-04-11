@@ -1,3 +1,4 @@
+
 namespace GeldAutomaatUser;
 
 public partial class DepositPage : ContentPage
@@ -21,5 +22,15 @@ public partial class DepositPage : ContentPage
         Label3.Text = "€50";
         Button4.Clicked += (sender, e) => { SharedLibrary.Controllers.geldautomaat_controller.Deposit(SharedLibrary.Controllers.geldautomaat_authenticator.activeAccount, 100); };
         Label4.Text = "€100";
+        Button5.Clicked += (sender, e) =>
+        {
+
+            //string amount = DisplayPromptAsync("Deposit", "Enter amount to deposit", "Deposit", "Cancel", "Amount", 16, Keyboard.Numeric, "").Result;
+            string amount = Label5.Text;
+            // convert string to decimal
+            decimal amountDouble = Convert.ToDecimal(amount);
+            SharedLibrary.Controllers.geldautomaat_controller.Deposit(SharedLibrary.Controllers.geldautomaat_authenticator.activeAccount, amountDouble);
+        };
+        Label5.Placeholder = "Other";
     }
 }

@@ -31,6 +31,8 @@ namespace SharedLibrary.Controllers
             activeAccount.iban = reader.GetString(1);
             activeAccount.pin = reader.GetString(2);
             activeAccount.balance = reader.GetDecimal(3);
+            activeAccount.firstname = reader.GetString(4);
+            activeAccount.lastname = reader.GetString(5);
             string query = "SELECT * FROM transactions where transactionAccountID = @accountID";
             SQL.Connection.Close();
             SQL.Connection.Open();
@@ -60,6 +62,21 @@ namespace SharedLibrary.Controllers
             //activeAccount.created_at = reader.GetDateTime(4);
             //activeAccount.updated_at = reader.GetDateTime(5);
             //activeAccount.deleted_at = reader.GetDateTime(6);
+        }
+
+        public static decimal CheckMaxWithdraw(Account account)
+        {
+            decimal maxWithdraw = 0;
+            var WithdrawalsToday = account.transactions.Where(x => x.transactionDatetime.Date == DateTime.Today && x.transactionType == "withdraw").ToList();
+            decimal WithdrawnToday = 0;
+            // add all the withdrawals today
+            foreach (Transaction transaction in WithdrawalsToday)
+            {
+                WithdrawnToday += transaction.transactionAmount;
+            }
+            maxWithdraw = 1500 - WithdrawnToday;
+
+            return maxWithdraw;
         }
 
         public static bool attemptAdminLogin(string email, string password)

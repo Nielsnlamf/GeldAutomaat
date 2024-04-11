@@ -12,6 +12,8 @@ namespace SharedLibrary.Models
         private string _iban;
         private string _pin;
         private decimal _balance;
+        private string _firstname;
+        private string _lastname;
         private int _active;
         private DateTime _created_at;
         private DateTime _updated_at;
@@ -57,6 +59,26 @@ namespace SharedLibrary.Models
             {
                 _balance = value;
                 OnPropertyChanged("balance");
+            }
+        }
+
+        public string firstname
+        {
+            get { return _firstname; }
+            set
+            {
+                _firstname = value;
+                OnPropertyChanged("firstname");
+            }
+        }
+
+        public string lastname
+        {
+            get { return _lastname; }
+            set
+            {
+                _lastname = value;
+                OnPropertyChanged("lastname");
             }
         }
 

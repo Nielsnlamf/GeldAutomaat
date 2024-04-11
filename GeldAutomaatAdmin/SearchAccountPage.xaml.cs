@@ -52,19 +52,32 @@ public partial class SearchAccountPage : ContentPage
 	{
 		Debug.WriteLine("Checkbox is: " + ShowInactive.IsChecked);
 		List<Account> filteredAccountList = GeldAutomaatObj.accounts;
-		if (ShowInactive.IsChecked)
+		if (!ShowInactive.IsChecked)
 		{
 			filteredAccountList = filteredAccountList.Where(x => x.active == 1).ToList();
         }
 		if (SearchEntry.Text != null)
 		{
-            filteredAccountList = filteredAccountList.Where(x => x.iban.Contains(SearchEntry.Text) || x.accountID.ToString().Contains(SearchEntry.Text)).ToList();
+            filteredAccountList = filteredAccountList.Where(x => x.iban.ToLower().Contains(SearchEntry.Text.ToLower()) || x.accountID.ToString().Contains(SearchEntry.Text) || x.firstname.ToLower().Contains(SearchEntry.Text.ToLower()) || x.lastname.ToLower().Contains(SearchEntry.Text.ToLower())).ToList();
         }
 		CollectionView.ItemsSource = filteredAccountList;
 	}
 
     private void ShowInactive_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
+		SearchButton_Clicked(null, null);
+    }
+
+    private async void Button_Clicked(object sender, EventArgs e)
+    {
+		// get name from button
+		Button button = (Button)sender;
+		int accountID = Convert.ToInt32(button.CommandParameter);
+		
+		Account SelectedAccount = GeldAutomaatObj.accounts.Where(x => x.accountID == accountID).FirstOrDefault();
+
+		System.Diagnostics.Debug.WriteLine("Edit button clicked for account: " + SelectedAccount.firstname);
+		await Navigation.PushAsync(new EditAccountPage(SelectedAccount));
 		SearchButton_Clicked(null, null);
     }
 }

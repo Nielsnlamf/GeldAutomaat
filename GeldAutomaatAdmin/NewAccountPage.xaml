@@ -21,6 +21,10 @@
             <Entry x:Name="PinEntry" IsReadOnly="True" WidthRequest="500" Margin="20"></Entry>
         </HorizontalStackLayout>
         <HorizontalStackLayout HorizontalOptions="Center">
+            <Entry x:Name="firstname" Placeholder="Name" Margin="10" WidthRequest="250"></Entry>
+            <Entry x:Name="lastname" Placeholder="Surname" Margin="10" WidthRequest="250"></Entry>
+        </HorizontalStackLayout>
+        <HorizontalStackLayout HorizontalOptions="Center">
             <Entry x:Name="BalanceEntry" Keyboard="Numeric" Placeholder="Balance" Margin="20"></Entry>
         </HorizontalStackLayout>
         <Button x:Name="CreateAccount" Text="Create account" Clicked="CreateAccount_Clicked"

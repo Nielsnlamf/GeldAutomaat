@@ -30,7 +30,7 @@
                 <Button x:Name="Button4" Grid.Column="3" Grid.ColumnSpan="1" Grid.Row="0" CornerRadius="50" Background="blue"></Button>
                 <Label x:Name="Label4" VerticalTextAlignment="Center" HorizontalTextAlignment="End" FontSize="40" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="0"></Label>
                 <Button x:Name="Button5" Grid.Column="3" Grid.ColumnSpan="1" Grid.Row="1" CornerRadius="50" Background="blue"></Button>
-                <Label x:Name="Label5" VerticalTextAlignment="Center" HorizontalTextAlignment="End" FontSize="40" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1"></Label>
+                <Entry x:Name="Label5" Keyboard="Numeric" VerticalTextAlignment="Center" HorizontalTextAlignment="End" FontSize="40" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1"></Entry>
                 <Button x:Name="Button6" Grid.Column="3" Grid.ColumnSpan="1" Grid.Row="2" CornerRadius="50" Background="blue"></Button>
                 <Label x:Name="Label6" VerticalTextAlignment="Center" HorizontalTextAlignment="End" FontSize="40" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="2"></Label>
         </Grid>
