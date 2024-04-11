@@ -1,4 +1,5 @@
 namespace GeldAutomaatAdmin;
+using SharedLibrary.Models;
 using Database;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -6,11 +7,14 @@ using System.Threading.Tasks;
 public partial class SearchAccountPage : ContentPage
 {
         SharedLibrary.Controllers.geldautomaat_controller GeldAutomaatObj;
+	public List<Account> foundAccounts { get; set; }
 	public SearchAccountPage()
 	{
 		InitializeComponent();
-		SearchTypePicker.SelectedIndex = 0;
+
 		GeldAutomaatObj = new SharedLibrary.Controllers.geldautomaat_controller();
+
+		InitializeResultGrid();
 	}
     private async void Back_Clicked(object sender, EventArgs e)
     {
@@ -18,78 +22,11 @@ public partial class SearchAccountPage : ContentPage
 		await Navigation.PopAsync();
     }
 
-	private TableRoot CreateTable(List<SharedLibrary.Models.Account> accounts)
+	private void InitializeResultGrid()
 	{
-        TableRoot tableRoot = new TableRoot();
-		TableSection tableSection = new TableSection();
-		if(accounts.Count == 0)
-		{
-		tableSection = new TableSection
-		{
-			new ViewCell
-			{
-				View = new StackLayout
-				{
-					Spacing = 20,
-					Children =
-					{
-                        new Label
-						{
-                            Text = "No accounts found.",
-                            FontSize = 20,
-							HorizontalTextAlignment = TextAlignment.Center,
-                            HorizontalOptions = LayoutOptions.Fill
-                        }
-                    }
-				}
-			}
-		};
-		}
-		else
-		{
-        foreach (SharedLibrary.Models.Account account in accounts)
-		{
-				MenuItem EditItem = new MenuItem { Text = "Edit", IsDestructive = true };
-                MenuItem DeleteItem = new MenuItem { Text = "Delete", IsDestructive = true };
-				EditItem.Clicked += (sender, args) => { EditAccount(account); };
-                DeleteItem.Clicked += (sender, args) => { DeleteAccount(account); };
-				Cell cell = new ViewCell
-				{
-					ContextActions =
-					{
-						EditItem,
-						DeleteItem
-                    },
-					View = new StackLayout
-					{
-						Margin = new Thickness(0, 0, 0, 10),
-						Orientation = StackOrientation.Vertical,
-						Children =
-						{
-							new Label
-							{
-								Text = account.iban,
-								FontSize = 20,
-							HorizontalTextAlignment = TextAlignment.Center,
-							HorizontalOptions = LayoutOptions.Fill
-							},
-							new Label
-							{
-								Text = "Account ID: " + account.accountID,
-								FontSize = 15,
-							HorizontalTextAlignment = TextAlignment.Center,
-							HorizontalOptions = LayoutOptions.Fill
-							}
-						}
-					}
-				};
-			tableSection.Add(cell);
-        }
-		}
-        tableRoot.Add(tableSection);
-        TableView tableView = new TableView(tableRoot);
-		return tableRoot;
-    }
+		CollectionView.ItemsSource = GeldAutomaatObj.accounts;
+	}
+
 
     private bool DeleteAccount(SharedLibrary.Models.Account account)
 	{
@@ -113,42 +50,34 @@ public partial class SearchAccountPage : ContentPage
 
     private void SearchButton_Clicked(Object sender, EventArgs e)
 	{
-	List<SharedLibrary.Models.Account> accounts = new List<SharedLibrary.Models.Account>();
-		if (SearchEntry.Text == "" || SearchEntry.Text == null)
+		Debug.WriteLine("Checkbox is: " + ShowInactive.IsChecked);
+		List<Account> filteredAccountList = GeldAutomaatObj.accounts;
+		if (!ShowInactive.IsChecked)
 		{
-            DisplayAlert("Error", "Please enter a keyword to search for.", "OK");
-            return;
+			filteredAccountList = filteredAccountList.Where(x => x.active == 1).ToList();
         }
-
-		string searchType = SearchTypePicker.SelectedItem.ToString();
-		if (searchType == "AccountID")
+		if (SearchEntry.Text != null)
 		{
-			var filteredList = from entry in GeldAutomaatObj.accounts
-                                  where entry.accountID.ToString().Contains(SearchEntry.Text) && entry.active == 1
-                                  select entry;
-			foreach (var entry in filteredList)
-			{
-                accounts.Add(entry);
-            }
-		}
-		else if (searchType == "User")
-		{
-			var filteredList = from entry in GeldAutomaatObj.users
-                                  where (entry.firstName + " " + entry.lastName).Contains(SearchEntry.Text) || (entry.lastName + " " + entry.firstName).Contains(SearchEntry.Text) || entry.userID.ToString().Contains(SearchEntry.Text) && entry.active == 1
-                                  select entry.accounts;
-		}
-		else
-		{
-			var filteredList = from entry in GeldAutomaatObj.accounts
-                                  where entry.iban.Contains(SearchEntry.Text) && entry.active == 1
-                                  select entry;
-			foreach (var entry in filteredList)
-			{
-                accounts.Add(entry);
-            }
-		}
-		Debug.WriteLine(accounts.Count);
-		SearchResults.Root = CreateTable(accounts);
+            filteredAccountList = filteredAccountList.Where(x => x.iban.ToLower().Contains(SearchEntry.Text.ToLower()) || x.accountID.ToString().Contains(SearchEntry.Text) || x.firstname.ToLower().Contains(SearchEntry.Text.ToLower()) || x.lastname.ToLower().Contains(SearchEntry.Text.ToLower())).ToList();
+        }
+		CollectionView.ItemsSource = filteredAccountList;
 	}
 
+    private void ShowInactive_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+		SearchButton_Clicked(null, null);
+    }
+
+    private async void Button_Clicked(object sender, EventArgs e)
+    {
+		// get name from button
+		Button button = (Button)sender;
+		int accountID = Convert.ToInt32(button.CommandParameter);
+		
+		Account SelectedAccount = GeldAutomaatObj.accounts.Where(x => x.accountID == accountID).FirstOrDefault();
+
+		System.Diagnostics.Debug.WriteLine("Edit button clicked for account: " + SelectedAccount.firstname);
+		await Navigation.PushAsync(new EditAccountPage(SelectedAccount));
+		SearchButton_Clicked(null, null);
+    }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GeldAutomaatUser.LoginPage"
+             NavigationPage.HasBackButton="False">
+
+    <ContentView VerticalOptions="FillAndExpand">
+    <VerticalStackLayout
+        Padding="20" Spacing="20" VerticalOptions="FillAndExpand">
+        <Label Text="Geldmaat" FontSize="Large" HorizontalOptions="Center" />
+        <Border StrokeThickness="3"></Border>
+        <VerticalStackLayout VerticalOptions="Center">
+        <VerticalStackLayout WidthRequest="500">
+            <Label Text="Iban" FontSize="16" HorizontalOptions="Center"></Label>
+            <Entry Completed="LoginBtnClicked" x:Name="IbanField" />
+        </VerticalStackLayout>
+        <VerticalStackLayout WidthRequest="500">
+            <Label Text="Pincode" FontSize="16" HorizontalOptions="Center"></Label>
+            <Entry Completed="LoginBtnClicked" IsPassword="True" x:Name="PinField" />
+        </VerticalStackLayout>
+        </VerticalStackLayout>
+        <Button Text="Submit" Clicked="LoginBtnClicked"/>
+
+    </VerticalStackLayout>
+    </ContentView>
+</ContentPage>

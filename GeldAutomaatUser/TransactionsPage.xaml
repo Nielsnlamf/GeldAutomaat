@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GeldAutomaatUser.TransactionsPage">
+
+    <ContentView>
+        <StackLayout>
+            <CollectionView VerticalScrollBarVisibility="Always" x:Name="TransactionCollectionView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <HorizontalStackLayout Padding="25">
+                            <Label FontSize="Large" Text="{Binding transactionID}" />
+                            <Label FontSize="Large" Text=" - "/>
+                            <Label FontSize="Large" Text="{Binding transactionType}"/>
+                            <Label FontSize="Large" Text=" - " />
+                            <Label FontSize="Large" Text="{Binding transactionAmount}" />
+                            <Label FontSize="Large" Text=" - " />
+                            <Label FontSize="Large" Text="{Binding transactionDatetime}" />
+                        </HorizontalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <HorizontalStackLayout HorizontalOptions="End">
+                <Label VerticalTextAlignment="Center"  HorizontalTextAlignment="End" FontSize="40" Text="Back"></Label>
+                <Button HorizontalOptions="End" Margin="20" WidthRequest="120" HeightRequest="120" x:Name="BackButton" CornerRadius="50" Background="blue"></Button>
+            </HorizontalStackLayout>
+        </StackLayout>
+    </ContentView>
+</ContentPage>

@@ -10,6 +10,7 @@ namespace SharedLibrary.Controllers
     public class geldautomaat_authenticator
     {
         public static Admin activeAdmin = new Admin();
+        public static Account activeAccount = new Account();
 
         public static void setActiveAdmin(MySqlDataReader reader)
         {
@@ -22,6 +23,60 @@ namespace SharedLibrary.Controllers
             activeAdmin.created_at = reader.GetDateTime(6);
             //activeAdmin.updated_at = reader.GetDateTime(7);
             //activeAdmin.deleted_at = reader.GetDateTime(8);
+        }
+
+        public static void setActiveAccount(MySqlDataReader reader)
+        {
+            activeAccount.accountID = reader.GetInt32(0);
+            activeAccount.iban = reader.GetString(1);
+            activeAccount.pin = reader.GetString(2);
+            activeAccount.balance = reader.GetDecimal(3);
+            activeAccount.firstname = reader.GetString(4);
+            activeAccount.lastname = reader.GetString(5);
+            string query = "SELECT * FROM transactions where transactionAccountID = @accountID";
+            SQL.Connection.Close();
+            SQL.Connection.Open();
+            using (MySqlCommand cmd = new MySqlCommand(query, SQL.Connection))
+            {
+                cmd.Parameters.AddWithValue("@accountID", activeAccount.accountID);
+                using (MySqlDataReader tempReader = cmd.ExecuteReader())
+                {
+                    List<Transaction> transactions = new List<Transaction>();
+                    while (reader.Read())
+                    {
+                        Transaction transaction = new Transaction();
+                        transaction.transactionID = reader.GetInt32(0);
+                        transaction.transactionAccountID = reader.GetInt32(1);
+                        transaction.transactionUserID = reader.GetInt32(2);
+                        transaction.transactionType = reader.GetString(3);
+                        transaction.transactionAmount = reader.GetDecimal(4);
+                        transaction.transactionDatetime = reader.GetDateTime(5);
+                        transactions.Add(transaction);
+                    }
+                    activeAccount.transactions = transactions;
+                    tempReader.Close();
+                }
+            }
+            activeAccount.canWithdraw = geldautomaat_controller.checkWithdrawable(activeAccount);
+            //activeAccount.transactions = new geldautomaat_controller().getTransactions(activeAccount.accountID);
+            //activeAccount.created_at = reader.GetDateTime(4);
+            //activeAccount.updated_at = reader.GetDateTime(5);
+            //activeAccount.deleted_at = reader.GetDateTime(6);
+        }
+
+        public static decimal CheckMaxWithdraw(Account account)
+        {
+            decimal maxWithdraw = 0;
+            var WithdrawalsToday = account.transactions.Where(x => x.transactionDatetime.Date == DateTime.Today && x.transactionType == "withdraw").ToList();
+            decimal WithdrawnToday = 0;
+            // add all the withdrawals today
+            foreach (Transaction transaction in WithdrawalsToday)
+            {
+                WithdrawnToday += transaction.transactionAmount;
+            }
+            maxWithdraw = 1500 - WithdrawnToday;
+
+            return maxWithdraw;
         }
 
         public static bool attemptAdminLogin(string email, string password)
@@ -39,6 +94,54 @@ namespace SharedLibrary.Controllers
                         if (VerifyPassword(password, hashedPassword))
                         {
                             setActiveAdmin(reader);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool refreshActiveAccount(dynamic id = null)
+        {
+            int usableID = 0;
+            if (id == null)
+            {
+                usableID = activeAccount.accountID;
+            }
+            SQL.Connection.Close();
+            SQL.Connection.Open();
+            string query = "SELECT * FROM accounts WHERE accountId = @id";
+            using (MySqlCommand cmd = new MySqlCommand(query, SQL.Connection))
+            {
+                cmd.Parameters.AddWithValue("@id", usableID);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        setActiveAccount(reader);
+                        return true;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public static bool attemptUserLogin(string iban, string pin)
+        {
+            string query = "SELECT * FROM accounts WHERE iban = @iban";
+            using (MySqlCommand cmd = new MySqlCommand(query, SQL.Connection))
+            {
+                cmd.Parameters.AddWithValue("@iban", iban);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Debug.WriteLine("Found account: " + reader.GetString(1));
+                        string hashedPin = reader.GetString(2);
+                        if (VerifyPassword(pin, hashedPin))
+                        {
+                            setActiveAccount(reader);
                             return true;
                         }
                     }

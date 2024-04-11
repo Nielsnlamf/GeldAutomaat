@@ -13,6 +13,8 @@ public partial class EditAccountPage : ContentPage
 		geldautomaat_controller GeldAutomaatObj = new geldautomaat_controller();
         this.account = account;
         IbanEntry.Text = account.iban;
+        FirstNameEntry.Text = account.firstname;
+        LastNameEntry.Text = account.lastname;
 
 	}
 
@@ -24,6 +26,7 @@ public partial class EditAccountPage : ContentPage
 
     private async void SaveButton_Clicked(object sender, EventArgs e)
     {
+        bool newPin = true;
         // check if iban is valid and not yet in use
         if (IbanEntry.Text.Length != 17)
         {
@@ -48,16 +51,37 @@ public partial class EditAccountPage : ContentPage
                 await DisplayAlert("Invalid PIN", "PIN must be 4 characters long.", "OK");
                 return;
             }
+            this.account.pin = PinEntry.Text;
+            
         }
-        this.account.pin = account.pin;
+        else
+        {
+        newPin = false;
+        }
         this.account.updated_at = DateTime.Now;
-        if(SharedLibrary.Controllers.geldautomaat_controller.editAccount(this.account)) {
+        this.account.firstname = new string(FirstNameEntry.Text.Where(c => char.IsLetter(c)).ToArray());
+        this.account.lastname = new string(LastNameEntry.Text.Where(c => char.IsLetter(c)).ToArray());
+
+        if(SharedLibrary.Controllers.geldautomaat_controller.editAccount(this.account, newPin)) {
             DisplayAlert("Success", "Account edited.", "OK");
             await Navigation.PopAsync();
         }
         else
         {
             DisplayAlert("Error", "Failed to edit account.", "OK");
+        }
+    }
+
+    private async void DeleteButton_Clicked(object sender, EventArgs e)
+    {
+		if (!SharedLibrary.Controllers.geldautomaat_controller.deleteAccount(this.account))
+		{
+			DisplayAlert("Account could not be deleted", "Something went wrong while attempting to delete this account, please try again.", "OK");
+		}
+        else
+        {
+			DisplayAlert("Account Deleted", "The account has been deleted.", "OK");
+            await Navigation.PopAsync();
         }
     }
 }

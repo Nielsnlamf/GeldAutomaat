@@ -33,25 +33,46 @@ namespace SharedLibrary.Controllers
             }
         }
 
-        public static bool editAccount(Account account)
+        public static bool editAccount(Account account, bool newPin)
         {
-            string query = "UPDATE accounts SET iban = @iban, pin = @pin, balance = @balance, updated_at = @updated WHERE accountID = @id";
-            using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                var pin = "";
+            if (newPin)
             {
-                var pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(account.pin.ToString());
-                cmd.Parameters.AddWithValue("@id", account.accountID);
-                cmd.Parameters.AddWithValue("@iban", account.iban);
-                cmd.Parameters.AddWithValue("@pin", pin);
-                cmd.Parameters.AddWithValue("@balance", account.balance);
-                cmd.Parameters.AddWithValue("@active", account.active);
-                cmd.Parameters.AddWithValue("@updated", DateTime.Now);
-                return cmd.ExecuteNonQuery() == 1;
+                string query = "UPDATE accounts SET iban = @iban, pin = @pin, balance = @balance, firstname = @firstname, lastname = @lastname, updated_at = @updated WHERE accountID = @id";
+                using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                {
+                    pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(account.pin.ToString());
+                    cmd.Parameters.AddWithValue("@pin", pin);
+                    cmd.Parameters.AddWithValue("@id", account.accountID);
+                    cmd.Parameters.AddWithValue("@iban", account.iban);
+                    cmd.Parameters.AddWithValue("@balance", account.balance);
+                    cmd.Parameters.AddWithValue("@firstname", account.firstname);
+                    cmd.Parameters.AddWithValue("@lastname", account.lastname);
+                    cmd.Parameters.AddWithValue("@active", account.active);
+                    cmd.Parameters.AddWithValue("@updated", DateTime.Now);
+                    return cmd.ExecuteNonQuery() == 1;
+                }
+            }
+            else
+            {
+                string query = "UPDATE accounts SET iban = @iban, balance = @balance, firstname = @firstname, lastname = @lastname, updated_at = @updated WHERE accountID = @id";
+                using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@id", account.accountID);
+                    cmd.Parameters.AddWithValue("@iban", account.iban);
+                    cmd.Parameters.AddWithValue("@balance", account.balance);
+                    cmd.Parameters.AddWithValue("@firstname", account.firstname);
+                    cmd.Parameters.AddWithValue("@lastname", account.lastname);
+                    cmd.Parameters.AddWithValue("@active", account.active);
+                    cmd.Parameters.AddWithValue("@updated", DateTime.Now);
+                    return cmd.ExecuteNonQuery() == 1;
+                }
             }
         }
 
         public static bool CreateAccount(Account account)
         {
-            string query = "INSERT INTO accounts (iban, pin, balance, active, created_at) VALUES (@iban, @pin, @balance, @active, @created)";
+            string query = "INSERT INTO accounts (iban, pin, balance, firstname, lastname, active, created_at) VALUES (@iban, @pin, @balance, @firstname, @lastname, @active, @created)";
             using (MySqlCommand cmd = new MySqlCommand(query, Connection))
             {
                 var pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(account.pin.ToString());
@@ -59,6 +80,8 @@ namespace SharedLibrary.Controllers
                 cmd.Parameters.AddWithValue("@iban", account.iban);
                 cmd.Parameters.AddWithValue("@pin", pin);
                 cmd.Parameters.AddWithValue("@balance", account.balance);
+                cmd.Parameters.AddWithValue("@firstname", account.firstname);
+                cmd.Parameters.AddWithValue("@lastname", account.lastname);
                 cmd.Parameters.AddWithValue("@active", account.active);
                 cmd.Parameters.AddWithValue("@created", DateTime.Now);
                 return cmd.ExecuteNonQuery() == 1;
@@ -91,10 +114,12 @@ namespace SharedLibrary.Controllers
                         account.iban = reader.GetString(1);
                         account.pin = reader.GetString(2);
                         account.balance = reader.GetDecimal(3);
-                        account.active = reader.GetInt32(4);
-                        account.created_at = reader.GetDateTime(5);
-                        account.updated_at = reader.GetDateTime(6);
-                        account.deleted_at = reader.GetDateTime(7);
+                        account.firstname = reader.GetString(4);
+                        account.lastname = reader.GetString(5);
+                        account.active = reader.GetInt32(6);
+                        account.created_at = reader.GetDateTime(7);
+                        account.updated_at = reader.GetDateTime(8);
+                        account.deleted_at = reader.GetDateTime(9);
                         accounts.Add(account);
                     }
                     catch
@@ -104,19 +129,97 @@ namespace SharedLibrary.Controllers
                         account.iban = reader.GetString(1);
                         account.pin = reader.GetString(2);
                         account.balance = reader.GetDecimal(3);
-                        account.active = reader.GetInt32(4);
-                        account.created_at = reader.GetDateTime(5);
-                        //account.updated_at = reader.GetDateTime(6);
-                        //account.deleted_at = reader.GetDateTime(7);
+                        account.firstname = reader.GetString(4);
+                        account.lastname = reader.GetString(5);
+                        account.active = reader.GetInt32(6);
+                        account.created_at = reader.GetDateTime(7);
+                        //account.updated_at = reader.GetDateTime(8);
+                        //account.deleted_at = reader.GetDateTime(9);
                         accounts.Add(account);
                     }
                     }
                 foreach (Account account in accounts)
                 {
+                    try { account.canWithdraw = checkWithdrawable(account); } catch { }
                     try { account.transactions = getTransactions(account.accountID); } catch { }
                 }
                 return accounts;
             }
+        }
+
+        public static bool checkWithdrawable(Account account)
+        {
+            System.Diagnostics.Debug.WriteLine("Account transaction list: " + account.transactions.Count());
+            if (account.balance == 0)
+            {
+                return false;
+            }
+            else
+            {
+                var filteredTransactions = from Transaction in account.transactions
+                                           where Transaction.transactionDatetime.Date == DateTime.Now.Date && Transaction.transactionType == "withdraw"
+                                           select Transaction;
+                if (filteredTransactions.Count() >= 3)
+                {
+                    System.Diagnostics.Debug.WriteLine("Can not withdraw");
+                    return false;
+                }
+                    System.Diagnostics.Debug.WriteLine("Can withdraw");
+                return true;
+            }
+        }
+
+        public static bool Withdraw(Account account, decimal amount)
+        {
+            if (account.balance - amount < 0)
+            {
+                return false;
+            }
+            else
+            {
+                string query = "INSERT INTO transactions (transactionAccountID, transactionUserID, transactionType, transactionAmount, transactionDatetime) VALUES (@accountID, @userID, @type, @amount, @datetime)";
+                using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@accountID", account.accountID);
+                    cmd.Parameters.AddWithValue("@userID", 1);
+                    cmd.Parameters.AddWithValue("@type", "withdraw");
+                    cmd.Parameters.AddWithValue("@amount", amount);
+                    cmd.Parameters.AddWithValue("@datetime", DateTime.Now);
+                    cmd.ExecuteNonQuery();
+                }
+
+                account.balance -= amount;
+
+                editAccount(account, false);
+
+                editAccount(account, false);
+                geldautomaat_authenticator.activeAccount = account;
+                geldautomaat_authenticator.refreshActiveAccount();
+                Microsoft.Maui.Controls.Application.Current.MainPage.Navigation.PopAsync();
+                return true;
+            }
+        }
+        public static bool Deposit(Account account, decimal amount)
+        {
+                string query = "INSERT INTO transactions (transactionAccountID, transactionUserID, transactionType, transactionAmount, transactionDatetime) VALUES (@accountID, @userID, @type, @amount, @datetime)";
+                using (MySqlCommand cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@accountID", account.accountID);
+                    cmd.Parameters.AddWithValue("@userID", 1);
+                    cmd.Parameters.AddWithValue("@type", "deposit");
+                    cmd.Parameters.AddWithValue("@amount", amount);
+                    cmd.Parameters.AddWithValue("@datetime", DateTime.Now);
+                    cmd.ExecuteNonQuery();
+                }
+
+                account.balance += amount;
+
+                editAccount(account, false);
+
+                editAccount(account, false);
+                geldautomaat_authenticator.activeAccount = account;
+                Microsoft.Maui.Controls.Application.Current.MainPage.Navigation.PopAsync();
+                return true;
         }
 
         private List<Account> getAllAccounts()
@@ -162,7 +265,7 @@ namespace SharedLibrary.Controllers
         }
 
         // Transactions
-        private List<Transaction> getTransactions(int accountID)
+        public List<Transaction> getTransactions(int accountID)
         {
             string query = "SELECT * FROM transactions where transactionAccountID = @accountID";
             using (MySqlCommand cmd = new MySqlCommand(query, Connection))

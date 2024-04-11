@@ -12,31 +12,41 @@
         <Label HorizontalOptions="Center" FontSize="Large" Text="Search for an account"></Label>
         
         <HorizontalStackLayout HorizontalOptions="Center" Spacing="15" MaximumHeightRequest="80">
-                <Label VerticalTextAlignment="Center" Text="Search by:" FontSize="Small" Margin="0,0,0,0"></Label>
-                <Picker WidthRequest="180" x:Name="SearchTypePicker">
-                <Picker.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                    <x:String>AccountID</x:String>
-                    <x:String>IBAN</x:String>
-                    <x:String>User</x:String>
-                </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-        <Entry WidthRequest="280" x:Name="SearchEntry" Completed="SearchButton_Clicked" Placeholder="Search keyword"></Entry>
+            <CheckBox x:Name="ShowInactive" IsChecked="True" CheckedChanged="ShowInactive_CheckedChanged"></CheckBox>
+            <Label VerticalTextAlignment="Center" Text="Show inactive" FontSize="Small" Margin="0,0,0,0"></Label>
+        <Entry WidthRequest="280" x:Name="SearchEntry" Completed="SearchButton_Clicked" Placeholder="Search for"></Entry>
         <Button x:Name="SearchButton" Text="Search" Clicked="SearchButton_Clicked"
                     MaximumWidthRequest="80" HorizontalOptions="End" VerticalOptions="Start"
                     ></Button>
         </HorizontalStackLayout>
-        <TableView x:Name="SearchResults" Intent="Settings">
-            <TableRoot>
-                <TableSection>
-                    <ViewCell>
-                        <StackLayout>
-                            <Label Text="No accounts found" FontSize="20" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"></Label>
-                        </StackLayout>
-                    </ViewCell>
-                </TableSection>
-            </TableRoot>
-        </TableView>
+
+        <CollectionView x:Name="CollectionView">
+            <CollectionView.Header>
+                    <Grid WidthRequest="800" ColumnDefinitions="1*, 100, 3*, 2*, 2*, 2*, 1*" RowSpacing="0" ColumnSpacing="0">
+                    <!--<Label Text="Edit" Grid.Column="0"></Label>-->
+                        <Label Text="ID" FontSize="20" Grid.Column="1"></Label>
+                        <Label Text="IBAN" FontSize="20" Grid.Column="2"></Label>
+                    <Label Text="Firstname" FontSize="20" Grid.Column="3"></Label>
+                    <Label Text="Lastname" FontSize="20" Grid.Column="4"></Label>
+                        <Label Text="Last used" FontSize="20" Grid.Column="5"></Label>
+                        <Label x:Name="activeColumn" IsVisible="True" Text="Active" FontSize="20" Grid.Column="6"></Label>
+                    </Grid>
+            </CollectionView.Header>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <ScrollView>
+                    <Grid WidthRequest="800" ColumnDefinitions="1*, 100, 3.5*, 2*, 2*, 2*, 1*" RowSpacing="0" ColumnSpacing="0">
+                            <Button Text="Edit" Clicked="Button_Clicked"  CommandParameter="{Binding accountID}" HeightRequest="10" Grid.Column="0"></Button>
+                        <Label VerticalTextAlignment="Center" Text="{Binding accountID}" FontSize="20" Grid.Column="1"></Label>
+                        <Label VerticalTextAlignment="Center" Text="{Binding iban}" FontSize="20" Grid.Column="2"></Label>
+                        <Label VerticalTextAlignment="Center" Text="{Binding firstname}" FontSize="20" Grid.Column="3"></Label>
+                        <Label VerticalTextAlignment="Center" Text="{Binding lastname}" FontSize="20" Grid.Column="4"></Label>
+                        <Label VerticalTextAlignment="Center" Text="{Binding updated_at}" FontSize="20" Grid.Column="5"></Label>
+                        <Label VerticalTextAlignment="Center" Text="{Binding active}" IsVisible="True" FontSize="20" Grid.Column="6"></Label>
+                    </Grid>
+                    </ScrollView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>

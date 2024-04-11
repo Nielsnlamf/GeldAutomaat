@@ -49,8 +49,20 @@ public partial class NewAccountPage : ContentPage
 	private async void CreateAccount_Clicked(object sender, EventArgs e)
 	{
 		var balance = 0;
+		string accountFirstname = "";
+		string accountLastname = "";
 		var iban = "";
 		var pin = 0000;
+		if (firstname.Text == null || firstname.Text == "" || lastname.Text == null || lastname.Text == "" )
+		{
+			await DisplayAlert("Invalid Name", "Please enter a valid first and last name.", "OK");
+		}
+		else
+		{
+			// filter out any non-alphabetic characters
+			accountFirstname = new string(firstname.Text.Where(c => char.IsLetter(c)).ToArray());
+			accountLastname = new string(lastname.Text.Where(c => char.IsLetter(c)).ToArray());
+		}
         System.Diagnostics.Debug.WriteLine("Create account button clicked. Creating account.");
 		if (CustomIBANCheck.IsChecked)
 		{
@@ -88,12 +100,14 @@ public partial class NewAccountPage : ContentPage
 		}
 		Account account = new Account();
 		account.iban = IbanEntry.Text;
-		account.pin = SharedLibrary.Controllers.geldautomaat_authenticator.HashPassword(PinEntry.Text);
+		account.pin = PinEntry.Text.ToString();
 		account.balance = balance;
+		account.firstname = accountFirstname;
+		account.lastname = accountLastname;
 		account.created_at = DateTime.Now;
 		account.active = 1;
 		bool result = SharedLibrary.Controllers.geldautomaat_controller.CreateAccount(account);
-		await DisplayAlert("Account created", "Account created successfully.", "OK");
+		await DisplayAlert("Account created", "Account created successfully with PIN: " + account.pin, "OK");
         await Navigation.PopAsync();
     }
 }

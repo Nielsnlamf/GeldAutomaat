@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SharedLibrary.Models
@@ -11,11 +12,15 @@ namespace SharedLibrary.Models
         private string _iban;
         private string _pin;
         private decimal _balance;
+        private string _firstname;
+        private string _lastname;
         private int _active;
         private DateTime _created_at;
         private DateTime _updated_at;
         private DateTime _deleted_at;
         private List<Transaction> _transactions = new List<Transaction>();
+        private bool _canWithdraw;
+
 
         public int accountID
         {
@@ -54,6 +59,26 @@ namespace SharedLibrary.Models
             {
                 _balance = value;
                 OnPropertyChanged("balance");
+            }
+        }
+
+        public string firstname
+        {
+            get { return _firstname; }
+            set
+            {
+                _firstname = value;
+                OnPropertyChanged("firstname");
+            }
+        }
+
+        public string lastname
+        {
+            get { return _lastname; }
+            set
+            {
+                _lastname = value;
+                OnPropertyChanged("lastname");
             }
         }
 
@@ -104,6 +129,16 @@ namespace SharedLibrary.Models
             {
                 _transactions = value;
                 OnPropertyChanged("transactions");
+            }
+        }
+
+        public bool canWithdraw
+        {
+            get { return _canWithdraw; }
+            set
+            {
+                _canWithdraw = value;
+                OnPropertyChanged("canWithdraw");
             }
         }
 
